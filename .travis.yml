@@ -1,0 +1,17 @@
+language: php
+
+php:
+  - '5.4'
+  - '5.5'
+  - '5.6'
+  - '7.0'
+  - '7.1'
+
+before_script:
+  - if [[ $(phpenv version-name) = "5.4" ]]; then ln -s phpunit-4.8.35.phar phpunit.phar fi
+  - if [[ $(phpenv version-name) = "5.5" ]]; then ln -s phpunit-4.8.35.phar phpunit.phar fi
+  - if [[ $(phpenv version-name) = "5.6" ]]; then ln -s phpunit-5.7.19.phar phpunit.phar fi
+  - if [[ $(phpenv version-name) = "7.0" ]]; then ln -s phpunit-6.1.3.phar phpunit.phar fi
+  - if [[ $(phpenv version-name) = "7.1" ]]; then ln -s phpunit-6.1.3.phar phpunit.phar fi
+
+script: php phpunit.phar
