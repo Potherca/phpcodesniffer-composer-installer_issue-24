@@ -1,5 +1,8 @@
 # `phpcodesniffer-composer-installer` issue #24
 
+[![Build Status][build-shield]][build-page]
+[![License][license-shield]][license-page]
+
 > _"Few things are harder to put up with than the annoyance of a good example."_
 > ~ Mark Twain
 
@@ -118,8 +121,13 @@ php phpunit-5.7.19.phar
 
 This will run the test to validate the documented behaviour.
 
+The result of these tests can be seen online at [this projects Travis-CI page][build-page]
 
 [1]: https://github.com/DealerDirect/phpcodesniffer-composer-installer/issues/24
 [2]: https://github.com/DealerDirect/phpcodesniffer-composer-installer/
 [3]: https://github.com/jrfnl
 [4]: ./screenshot.png
+[build-page]: https://travis-ci.org/Potherca/phpcodesniffer-composer-installer_issue-24
+[build-shield]: https://travis-ci.org/Potherca/phpcodesniffer-composer-installer_issue-24.svg
+[license-page]: LICENSE
+[license-shield]: https://img.shields.io/github/license/Potherca/phpcodesniffer-composer-installer_issue-24.svg
