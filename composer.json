@@ -1,0 +1,13 @@
+{
+    "name": "potherca/phpcodesniffer-composer-installer_issue-24",
+    "description": "Example to accompany issue #24 of phpcodesniffer-composer-installer.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ben Peachey",
+            "email": "ben.peachey@dealerdirect.nl"
+        }
+    ],
+    "require": {}
+}
