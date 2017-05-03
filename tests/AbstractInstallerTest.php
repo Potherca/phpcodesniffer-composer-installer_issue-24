@@ -118,6 +118,34 @@ TXT
         self::assertSame($expected, $actual, 'Codesniff configuration file did not contain reference to installed sniff(s)');
     }
 
+    /**
+     * 4. Repeat test incrementally
+     */
+    final public function testResultsShouldBeTheSameWhenPackagesAreInstalledIncrementally()
+    {
+        $packages = self::$packages;
+
+        $this->removePreviousInstall($packages);
+
+        $installed = [];
+
+        array_walk($packages, function ($package) use (&$installed) {
+            $output = $this->installPackages([$package]);
+
+            if ($this->isSniff($package)) {
+
+                if ($package === 'drupal/coder') {
+                    $package .= '/coder_sniffer';
+                }
+
+                $installed[] = static::getVendorDirectory().'/'.$package;
+
+                $this->testComposerOutputShouldMentionOfInstalledSniffsWhenSniffsHaveBeenInstalled([$output, $installed]);
+                $this->testCodeSnifferConfigurationFileShouldMentionBothSniffs($installed);
+            }
+        });
+    }
+
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     private function assertSniffsNotInComposerJson($packages)
     {
