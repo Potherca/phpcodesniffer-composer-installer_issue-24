@@ -12,7 +12,7 @@
 >
     <testsuites>
         <testsuite name="phpcodesniffer-composer-installer issue #24">
-            <directory suffix="Test.php">.</directory>
+            <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
 
