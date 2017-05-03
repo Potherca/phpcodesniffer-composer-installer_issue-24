@@ -4,7 +4,13 @@ namespace Dealerdirect\Composer\Plugin\Installers\PHPCodeSniffer;
 
 require_once __DIR__ . '/AbstractTestCase.php';
 
-/** @noinspection PhpUndefinedClassInspection */
+/** @noinspection PhpUndefinedClassInspection
+ *
+ * Automated checks to validate the behaviour of the phpcodesniffer-composer-installer
+ * when several different codesniffs are installed.
+ *
+ * Contains tests for both the all-at-once and the incremental install scenarios.
+ */
 abstract class AbstractInstallerTest  extends AbstractTestCase
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\

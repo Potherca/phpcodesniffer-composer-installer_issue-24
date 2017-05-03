@@ -4,6 +4,10 @@ namespace Dealerdirect\Composer\Plugin\Installers\PHPCodeSniffer;
 
 require_once __DIR__ . '/AbstractInstallerTest.php';
 
+/**
+ * Automated checks to validate the behaviour of the phpcodesniffer-composer-installer
+ * when several different codesniffs are installed globally (system wide).
+ */
 class GlobalTest extends AbstractInstallerTest
 {
     /**
