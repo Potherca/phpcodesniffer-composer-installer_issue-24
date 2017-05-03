@@ -10,12 +10,6 @@ abstract class AbstractInstallerTest  extends AbstractTestCase
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
     /** @var string */
     private static $originalComposerJson;
-    /** @var array */
-    private static $packages = [
-        'dealerdirect/phpcodesniffer-composer-installer',
-        'drupal/coder',
-        'frenck/php-compatibility',
-    ];
 
     //////////////////////////// SETTERS AND GETTERS \\\\\\\\\\\\\\\\\\\\\\\\\\\
     private function getVendorDirectory()
@@ -48,7 +42,11 @@ abstract class AbstractInstallerTest  extends AbstractTestCase
      */
     final public function testComposerShouldInstallBothSniffsWhenAskedTo()
     {
-        $packages = self::$packages;
+        $packages = [
+            'dealerdirect/phpcodesniffer-composer-installer',
+            'drupal/coder',
+            'frenck/php-compatibility',
+        ];
 
         $this->removePreviousInstall($packages);
 
@@ -120,16 +118,25 @@ TXT
 
     /**
      * 4. Repeat test incrementally
+     *
+     * @param array $packages
+     * @param string $subject
      */
-    final public function testResultsShouldBeTheSameWhenPackagesAreInstalledIncrementally()
+    final public function testResultsShouldBeTheSameWhenPackagesAreInstalledIncrementally(array $packages = [], $subject = '')
     {
-        $packages = self::$packages;
+        if (count($packages) === 0) {
+            $packages = [
+                'dealerdirect/phpcodesniffer-composer-installer',
+                'drupal/coder',
+                'frenck/php-compatibility',
+            ];
+        }
 
         $this->removePreviousInstall($packages);
 
         $installed = [];
 
-        array_walk($packages, function ($package) use (&$installed) {
+        array_walk($packages, function ($package) use (&$installed, $subject) {
             $output = $this->installPackages([$package]);
 
             if ($this->isSniff($package)) {
@@ -140,10 +147,26 @@ TXT
 
                 $installed[] = static::getVendorDirectory().'/'.$package;
 
-                $this->testComposerOutputShouldMentionOfInstalledSniffsWhenSniffsHaveBeenInstalled([$output, $installed]);
-                $this->testCodeSnifferConfigurationFileShouldMentionBothSniffs($installed);
+                if ($subject === '' || $subject === $package) {
+                    $this->testComposerOutputShouldMentionOfInstalledSniffsWhenSniffsHaveBeenInstalled([$output, $installed]);
+                    $this->testCodeSnifferConfigurationFileShouldMentionBothSniffs($installed);
+                }
             }
         });
+    }
+
+    /**
+     * 5. Repeat incremental test with sniff installed before installer
+     */
+    final public function testIncrementalResultsShouldBeTheSameWhenPackagesAreInstalledInDifferentOrder()
+    {
+        $packages = [
+            'drupal/coder',
+            'dealerdirect/phpcodesniffer-composer-installer',
+            'frenck/php-compatibility',
+        ];
+
+        $this->testResultsShouldBeTheSameWhenPackagesAreInstalledIncrementally($packages, 'frenck/php-compatibility');
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
