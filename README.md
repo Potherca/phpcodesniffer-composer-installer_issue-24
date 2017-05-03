@@ -19,9 +19,13 @@ It is supposed to function fully standalone, no external dependencies are requir
 
 Just add PHP.
 
+The result of the accompanying tests can be seen online at [this projects Travis-CI page][build-page].
+
+Tests are present for both "local" (project-specific) and "global" (system-wide) scenario's.
+
 ## Original question
 
-The original question was posed as follows:
+The following questions were posed:
 
 > ## Question
 >
@@ -38,19 +42,38 @@ The original question was posed as follows:
 > Related: https://github.com/squizlabs/PHP_CodeSniffer/issues/1436
 >
 
+and
+
+> What about if the user installs the sniff library as "global" using Composer and they already have one or more other standards installed globally ? (which they're not updating at the same time)
+
 ## Expected behaviour
 
 Given the scenario that a user has defined two sniffs as a dependency, the
 _expected_ behaviour would be that the installer installs _both_ sniffs.
 
-This should lead to the path of _both_ sniffs being present in the PHP Codesniffer
- configuration file at `vendor/squizlabs/php_codesniffer/CodeSniffer.conf`.
+This should lead to the path of _both_ sniffs being present in the PHP
+Codesniffer configuration file at `vendor/squizlabs/php_codesniffer/CodeSniffer.conf`.
+
+Whether the sniffs are installed one-by-one or altogether, and whether the
+sniffs are installed locally or globally also should not make a difference for
+the end result.
+
+There is a slightly different scenario when a sniff is already installed _before_
+the installer is installed.
+
+In such a case, the installer does not do anything (as
+the sniff is already installed and no installation is needed).
+
+However, when another sniff is installed, _both_ sniffs will be installed by the
+installer.
 
 ## Steps to reproduce
 
 1. Install the installer and two sniffs as composer dependency.
 2. Validate the CLI output of composer
 3. Validate the contents of `vendor/squizlabs/php_codesniffer/CodeSniffer.conf`
+4. Repeat test incrementally
+5. Repeat incremental test with sniff installed before installer
 
 ### 1. Install the installer and sniffs
 
@@ -91,11 +114,40 @@ It _should_ contain something similar to the following:
 ?>
 ```
 
+### 4. Repeat test incrementally
+
+The result of the previous checks should not be different, whether or not all of
+the sniffs are installed together or apart.
+
+To verify this, the packages are iterated over and the previous tests are called
+individually for each package.
+
+The results should be the same and the re-used tests should all pass.
+
+### 5. Repeat incremental test with sniff installed before installer
+
+What happens if a sniff is already installed and the installer is installed
+afterwards?
+
+If a new sniff is installed, will the "previous" sniff also be installed?
+
+In order to validate this, the order in which the packages are installed is
+changed.
+
+Instead of installing the installer first and the sniffs after that, first a
+sniff is installed, then the installer, then another sniff.
+
+Re-using the previous test (which in turn re-uses the other tests) it can be
+validated that both sniffs are present after the last sniff is installed.
+
 ## Proof
 
-This repository provides a test that automatically runs through the steps
-described below. The test also contains assertions to validate the described
+This repository provides tests that automatically runs through the steps
+described above. The test also contains assertions to validate the described
 behaviour.
+
+Tests are present for both "local" (project-specific) and "global" (system-wide)
+scenario's.
 
 Various versions of PHPUnit are shipped with this repository. This enables users
 to run the test against the PHP version of their choice:
