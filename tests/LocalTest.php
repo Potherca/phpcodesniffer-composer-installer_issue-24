@@ -4,7 +4,7 @@ namespace Dealerdirect\Composer\Plugin\Installers\PHPCodeSniffer;
 
 require_once __DIR__ . '/AbstractTestCase.php';
 
-class Issue24Test extends AbstractTestCase
+class LocalTest extends AbstractTestCase
 {
     /** @var array */
     private static $output = [];
