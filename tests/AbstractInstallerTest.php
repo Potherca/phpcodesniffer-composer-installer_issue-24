@@ -15,7 +15,7 @@ abstract class AbstractInstallerTest  extends AbstractTestCase
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
     /** @var string */
-    private static $originalComposerJson;
+    protected static $originalComposerJson;
 
     //////////////////////////// SETTERS AND GETTERS \\\\\\\\\\\\\\\\\\\\\\\\\\\
     private function getVendorDirectory()
@@ -176,25 +176,30 @@ TXT
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-    private function assertSniffsNotInComposerJson($packages)
+    private function assertSniffsNotInstalled($packages)
     {
-        $output = $this->executeComposerCommand('show');
+        $composerFile = static::getComposerDirectory() . '/composer.json';
 
-        array_walk($output, function ($line) use ($packages) {
-            array_walk($packages, function($package) use ($line) {
-                if ($this->isSniff($package)) {
-                    $position = strpos($line, $package);
-                    self::assertFalse($position, 'Test can not run as package is already installed: '.$package);
-                }
+        // @NOTE: The `composer show` command only works if a `composer.json` file is present.
+        if (is_file($composerFile)) {
+            $output = $this->executeComposerCommand('show');
+
+            array_walk($output, function ($line) use ($packages) {
+                array_walk($packages, function($package) use ($line) {
+                    if ($this->isSniff($package)) {
+                        $position = strpos($line, $package);
+                        self::assertFalse($position, 'Test can not run as package is already installed: '.$package);
+                    }
+                });
             });
-        });
+        }
     }
 
-    private function assertSniffsNotInstalled(array $packages)
+    private function assertSniffsNotInComposerJson(array $packages)
     {
-        $json = json_decode(self::$originalComposerJson, true);
+        $json = json_decode(static::$originalComposerJson, true);
 
-        if (array_key_exists('require', $json) && is_array($json['require'])) {
+        if (is_array($json) && array_key_exists('require', $json) && is_array($json['require'])) {
             array_walk($json['require'], function ($version, $requirePackage) use ($packages) {
                 array_walk($packages, function($package) use ($requirePackage) {
                     if ($this->isSniff($package)) {
@@ -324,7 +329,7 @@ TXT
     private function restoreOriginalComposerJson()
     {
         $composerFile = static::getComposerDirectory() . '/composer.json';
-        $contents = self::$originalComposerJson;
+        $contents = static::$originalComposerJson;
 
         if ($contents === null) {
             $this->removeFile($composerFile, 'composer.json');
@@ -342,7 +347,7 @@ TXT
         $composerFile = static::getComposerDirectory() . '/composer.json';
 
         if (is_file($composerFile)) {
-            self::$originalComposerJson = file_get_contents($composerFile);
+            static::$originalComposerJson = file_get_contents($composerFile);
         }
     }
 }
