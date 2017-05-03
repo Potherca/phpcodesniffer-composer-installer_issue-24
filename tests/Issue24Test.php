@@ -26,14 +26,26 @@ class Issue24Test extends AbstractTestCase
     /** @var array */
     private static $output = [];
     /** @var string  */
-    private static $rootDirectory = __DIR__;
+    private static $vendorDirectory;
+
+    /**
+     * @return string
+     */
+    final public static function getVendorDirectory()
+    {
+        if (self::$vendorDirectory === null) {
+            self::$vendorDirectory = dirname(__DIR__).'/vendor';
+        }
+
+        return self::$vendorDirectory;
+    }
 
     /**
      * 1. Install the installer and two sniffs as composer dependency.
      */
     final public static function setUpBeforeClass()
     {
-        $vendorDirectory = self::$rootDirectory . '/vendor/';
+        $vendorDirectory = self::getVendorDirectory();
 
         // Remove any previously installed vendors
         if (is_dir($vendorDirectory)) {
@@ -59,8 +71,8 @@ class Issue24Test extends AbstractTestCase
         $actual = array_pop(self::$output);
 
         $expected = sprintf(
-            'PHP CodeSniffer Config installed_paths set to %1$s/vendor/drupal/coder/coder_sniffer,%1$s/vendor/frenck/php-compatibility',
-            self::$rootDirectory
+            'PHP CodeSniffer Config installed_paths set to %1$s/drupal/coder/coder_sniffer,%1$s/frenck/php-compatibility',
+            self::getVendorDirectory()
         );
 
         self::assertSame($expected, $actual, 'Composer output did not contain reference to both sniffs');
@@ -71,7 +83,7 @@ class Issue24Test extends AbstractTestCase
      */
     final public function testCodeSnifferConfigurationFileShouldMentionBothSniffs()
     {
-        $configurationPath = self::$rootDirectory . '/vendor/squizlabs/php_codesniffer/CodeSniffer.conf';
+        $configurationPath = self::getVendorDirectory() . '/squizlabs/php_codesniffer/CodeSniffer.conf';
 
         self::assertFileExists($configurationPath, 'CodeSniffer configuration file does not exist');
 
@@ -80,12 +92,12 @@ class Issue24Test extends AbstractTestCase
         $expected = sprintf(<<<'TXT'
 <?php
  $phpCodeSnifferConfig = array (
-  'installed_paths' => '%1$s/vendor/drupal/coder/coder_sniffer,%1$s/vendor/frenck/php-compatibility',
+  'installed_paths' => '%1$s/drupal/coder/coder_sniffer,%1$s/frenck/php-compatibility',
 )
 ?>
 TXT
             ,
-            self::$rootDirectory
+            self::getVendorDirectory()
         );
 
         self::assertSame($expected, $actual, 'Codesniff configuration file did not contain reference to both sniffs');
