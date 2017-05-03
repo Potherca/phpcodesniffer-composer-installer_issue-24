@@ -40,7 +40,7 @@ abstract class AbstractInstallerTest  extends AbstractTestCase
     final public function tearDown()
     {
         $this->restoreOriginalComposerJson();
-        $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock file');
+        $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock');
     }
 
     /**
@@ -229,10 +229,10 @@ TXT
      * @param string $file
      * @param string $fileType
      */
-    private function removeFile($file, $fileType = 'file')
+    private function removeFile($file, $fileType = '')
     {
         if (is_file($file)) {
-            $errorMessage = 'Could not remove '.$fileType;
+            $errorMessage = 'Could not remove '.$fileType.' file';
 
             $removed = unlink($file);
 
@@ -257,8 +257,8 @@ TXT
         });
 
         $this->restoreOriginalComposerJson();
-        $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock file');
-        $this->removeFile($this->getCodesnifferConfigurationPath(), 'Codesniffer configuration file');
+        $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock');
+        $this->removeFile($this->getCodesnifferConfigurationPath(), 'Codesniffer configuration');
 
         $this->assertSniffsNotInstalled($packages);
         $this->assertSniffsNotInComposerJson($packages);
@@ -267,21 +267,26 @@ TXT
     private function restoreOriginalComposerJson()
     {
         $composerFile = static::getComposerDirectory() . '/composer.json';
+        $contents = self::$originalComposerJson;
 
-        self::assertFileExists($composerFile, 'Composer file does not exist');
+        if ($contents === null) {
+            $this->removeFile($composerFile, 'composer.json');
+        } else {
+            self::assertFileExists($composerFile, 'Composer file does not exist');
 
-        $actual = file_put_contents($composerFile, self::$originalComposerJson);
+            $actual = file_put_contents($composerFile, $contents);
 
-        self::assertNotFalse($actual, 'The composer.json file could not be restored');
+            self::assertNotFalse($actual, 'The composer.json file could not be restored');
+        }
     }
 
     private static function storeOriginalComposerJson()
     {
         $composerFile = static::getComposerDirectory() . '/composer.json';
 
-        self::assertFileExists($composerFile, 'Composer file does not exist');
-
-        self::$originalComposerJson = file_get_contents($composerFile);
+        if (is_file($composerFile)) {
+            self::$originalComposerJson = file_get_contents($composerFile);
+        }
     }
 }
 
