@@ -119,6 +119,36 @@ TXT
     }
 
     ////////////////////////////// UTILITY METHODS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    private function assertSniffsNotInComposerJson($packages)
+    {
+        $output = $this->executeComposerCommand('show');
+
+        array_walk($output, function ($line) use ($packages) {
+            array_walk($packages, function($package) use ($line) {
+                if ($this->isSniff($package)) {
+                    $position = strpos($line, $package);
+                    self::assertFalse($position, 'Test can not run as package is already installed: '.$package);
+                }
+            });
+        });
+    }
+
+    private function assertSniffsNotInstalled(array $packages)
+    {
+        $json = json_decode(self::$originalComposerJson, true);
+
+        if (array_key_exists('require', $json) && is_array($json['require'])) {
+            array_walk($json['require'], function ($version, $requirePackage) use ($packages) {
+                array_walk($packages, function($package) use ($requirePackage) {
+                    if ($this->isSniff($package)) {
+                        self::assertNotEquals($requirePackage, $package, 'Test can not run as package is declared in composer.json: '.$package);
+                    }
+                });
+            });
+        }
+
+    }
+
     /**
      * @param string $command
      *
@@ -154,6 +184,16 @@ TXT
         $command = 'require --sort-packages "' . implode('" "', $packages) . '"';
 
         return $this->executeComposerCommand($command);
+    }
+
+    /**
+     * @param string $package
+     *
+     * @return bool
+     */
+    private function isSniff($package)
+    {
+        return $package !== 'dealerdirect/phpcodesniffer-composer-installer';
     }
 
     /**
@@ -219,6 +259,9 @@ TXT
         $this->restoreOriginalComposerJson();
         $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock file');
         $this->removeFile($this->getCodesnifferConfigurationPath(), 'Codesniffer configuration file');
+
+        $this->assertSniffsNotInstalled($packages);
+        $this->assertSniffsNotInComposerJson($packages);
     }
 
     private function restoreOriginalComposerJson()
