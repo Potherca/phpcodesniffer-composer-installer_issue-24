@@ -8,6 +8,8 @@ require_once __DIR__ . '/AbstractTestCase.php';
 abstract class AbstractInstallerTest  extends AbstractTestCase
 {
     ////////////////////////////// CLASS PROPERTIES \\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    /** @var string */
+    private static $originalComposerJson;
     /** @var array */
     private static $packages = [
         'dealerdirect/phpcodesniffer-composer-installer',
@@ -32,10 +34,12 @@ abstract class AbstractInstallerTest  extends AbstractTestCase
     //////////////////////////////// PUBLIC API \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     final public static function setUpBeforeClass()
     {
+        self::storeOriginalComposerJson();
     }
 
     final public function tearDown()
     {
+        $this->restoreOriginalComposerJson();
         $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock file');
     }
 
@@ -212,8 +216,29 @@ TXT
             }
         });
 
+        $this->restoreOriginalComposerJson();
         $this->removeFile(static::getComposerDirectory().'/composer.lock', 'composer lock file');
         $this->removeFile($this->getCodesnifferConfigurationPath(), 'Codesniffer configuration file');
+    }
+
+    private function restoreOriginalComposerJson()
+    {
+        $composerFile = static::getComposerDirectory() . '/composer.json';
+
+        self::assertFileExists($composerFile, 'Composer file does not exist');
+
+        $actual = file_put_contents($composerFile, self::$originalComposerJson);
+
+        self::assertNotFalse($actual, 'The composer.json file could not be restored');
+    }
+
+    private static function storeOriginalComposerJson()
+    {
+        $composerFile = static::getComposerDirectory() . '/composer.json';
+
+        self::assertFileExists($composerFile, 'Composer file does not exist');
+
+        self::$originalComposerJson = file_get_contents($composerFile);
     }
 }
 
