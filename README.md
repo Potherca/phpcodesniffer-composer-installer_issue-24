@@ -179,7 +179,7 @@ The result of these tests can be seen online at [this projects Travis-CI page][b
 [2]: https://github.com/DealerDirect/phpcodesniffer-composer-installer/
 [3]: https://github.com/jrfnl
 [4]: ./screenshot.png
-[build-page]: https://travis-ci.org/Potherca/phpcodesniffer-composer-installer_issue-24
-[build-shield]: https://travis-ci.org/Potherca/phpcodesniffer-composer-installer_issue-24.svg
+[build-page]: https://travis-ci.org/potherca-abandoned/phpcodesniffer-composer-installer_issue-24
+[build-shield]: https://api.travis-ci.org/potherca-abandoned/phpcodesniffer-composer-installer_issue-24.svg
 [license-page]: LICENSE
 [license-shield]: https://img.shields.io/github/license/Potherca/phpcodesniffer-composer-installer_issue-24.svg
